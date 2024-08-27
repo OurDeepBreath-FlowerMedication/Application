@@ -1,0 +1,12 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <!-- 회색 원의 배경 색상 -->
+    <solid android:color="#D6D6D6D6"/>
+
+    <!-- 원의 크기 설정 -->
+    <size
+        android:width="60dp"
+        android:height="60dp"/>
+
+</shape>

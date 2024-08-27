@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">flowerMedication</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="menu0">오늘의 꽃피움</string>
+    <string name="menu1">꽃피움 달력</string>
+    <string name="menu2">일정 관리</string>
+    <string name="menu3">섭취약 관리</string>
+    <string name="menu4">기기 관리</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

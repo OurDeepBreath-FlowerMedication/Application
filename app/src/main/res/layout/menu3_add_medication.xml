@@ -57,7 +57,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+        app:layout_constraintTop_toBottomOf="@+id/mealTime" />
 
     <com.example.flowermedication.custom_view.UnderLine
         android:id="@+id/underLine2"
@@ -89,7 +89,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="50dp"
         android:ems="10"
-        android:hint="새롭게 등록할 일정을 입력하세요"
+        android:hint="복용할 약의 명칭을 입력하세요."
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -107,7 +107,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switch1" />
+        app:layout_constraintTop_toBottomOf="@+id/useCheck" />
 
     <TextView
         android:id="@+id/textView8"
@@ -121,7 +121,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup2" />
+        app:layout_constraintTop_toBottomOf="@+id/interval" />
 
     <com.example.flowermedication.custom_view.UnderLine
         android:id="@+id/underLine4"
@@ -332,7 +332,7 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
     <RadioGroup
-        android:id="@+id/radioGroup"
+        android:id="@+id/mealTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -341,28 +341,28 @@
         app:layout_constraintTop_toBottomOf="@+id/underLine2">
 
         <RadioButton
-            android:id="@+id/radioButton"
+            android:id="@+id/breakfast"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="20dp"
             android:text="아침" />
 
         <RadioButton
-            android:id="@+id/radioButton3"
+            android:id="@+id/lunch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="20dp"
             android:text="점심" />
 
         <RadioButton
-            android:id="@+id/radioButton2"
+            android:id="@+id/dinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="저녁" />
     </RadioGroup>
 
     <RadioGroup
-        android:id="@+id/radioGroup2"
+        android:id="@+id/interval"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
@@ -372,26 +372,26 @@
         app:layout_constraintTop_toBottomOf="@+id/underLine3">
 
         <RadioButton
-            android:id="@+id/radioButton4"
+            android:id="@+id/before"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="식사 30분 전 섭취" />
 
         <RadioButton
-            android:id="@+id/radioButton5"
+            android:id="@+id/with"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="식사와 함께 섭취" />
 
         <RadioButton
-            android:id="@+id/radioButton6"
+            android:id="@+id/after"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="식사 30분 뒤 섭취" />
     </RadioGroup>
 
     <Switch
-        android:id="@+id/switch1"
+        android:id="@+id/useCheck"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"

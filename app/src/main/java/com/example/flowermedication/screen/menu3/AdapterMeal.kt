@@ -1,36 +1,46 @@
 package com.example.flowermedication.screen.menu3
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.flowermedication.Medication
 import com.example.flowermedication.R
-import java.util.Date
 
-class AdapterMeal: RecyclerView.Adapter<MealView>(){
+class AdapterMeal(val day:Int, val fragment: Menu3Fragment): RecyclerView.Adapter<MealView>(){
     var adapterMedication : AdapterMedication ?= null
     val meals : List<String> = listOf("아침", "점심", "저녁")
+    var medications: MutableList<Medication> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MealView {
-        var view = LayoutInflater.from(parent.context).inflate(R.layout.menu3_day, parent, false)
+        var view = LayoutInflater.from(parent.context).inflate(R.layout.menu3_meal, parent, false)
         return MealView(view)
     }
 
     override fun onBindViewHolder(holder: MealView, position: Int) {
-        adapterMedication = AdapterMedication(position)
+        adapterMedication = AdapterMedication(position, day, fragment)
         holder.setMeal(position, meals[position], adapterMedication as AdapterMedication)
+
+        var result_medications : MutableList<Medication> = mutableListOf()
+
+        for(medication in medications){
+            if(medication.meal_time==position){
+                result_medications.add(medication)
+            }
+        }
+
+        adapterMedication!!.updateData(result_medications)
     }
 
     override fun getItemCount(): Int {
         return 3
     }
 
-    fun updateData(){
-        adapterMedication?.updateData()
+    fun updateData(medication_list : MutableList<Medication>){
+        medications.clear()
+        medications.addAll(medication_list)
         notifyDataSetChanged()
     }
 }

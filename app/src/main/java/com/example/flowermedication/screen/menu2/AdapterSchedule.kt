@@ -10,15 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.flowermedication.DaySchedule
 import com.example.flowermedication.R
 import com.example.flowermedication.custom_view.TimeBarView
-import com.example.flowermedication.get_data.getDaySchedule
+import com.example.flowermedication.get_data.delRoutin
 
+class AdapterSchedule(val fragment: Menu2Fragment, val day:Int) : RecyclerView.Adapter<ScheduleView>(){
+    var schedules: MutableList<DaySchedule> = mutableListOf()
 
-class AdapterSchedule(private var position:Int) : RecyclerView.Adapter<ScheduleView>(){
-
-    var schedules : MutableList<DaySchedule> = getDaySchedule(position)
-
-    fun updateData(){
-        schedules = getDaySchedule(position)
+    fun updateData(newList: MutableList<DaySchedule>){
+        schedules.clear()  // 기존 데이터를 지우고
+        schedules.addAll(newList)  // 새로운 데이터를 추가
         notifyDataSetChanged()
     }
 
@@ -28,30 +27,38 @@ class AdapterSchedule(private var position:Int) : RecyclerView.Adapter<ScheduleV
     }
 
     override fun onBindViewHolder(holder: ScheduleView, position: Int) {
-        holder.setSchedule(schedules, position)
+        holder.setSchedule(schedules, position, fragment, day)
     }
 
     override fun getItemCount(): Int {
-        return schedules.size
+        if(schedules!=null) {
+            return schedules.size
+        }
+        return 0
     }
 }
 
 class ScheduleView(itemView : View) : RecyclerView.ViewHolder(itemView){
-    fun setSchedule(schedules : MutableList<DaySchedule>, position: Int){
+    fun setSchedule(schedules : List<DaySchedule>?, position: Int, fragment: Menu2Fragment, day:Int){
         val schedule_name : TextView = itemView.findViewById(R.id.schedule_name)
         val time_bar : TimeBarView = itemView.findViewById(R.id.time_bar)
         val delete_btn : ImageButton = itemView.findViewById(R.id.delete_btn)
 
-        schedule_name.text = schedules[position].schedule_name
+        schedule_name.text = schedules?.get(position)?.schedule_name
 
-        time_bar.setStartTime(schedules[position].start_hour, schedules[position].start_minute)
-        time_bar.setEndTime(schedules[position].end_hour, schedules[position].end_minute)
+        if(schedules != null) {
+            time_bar.setStartTime(schedules[position].start_hour, schedules[position].start_minute)
+            time_bar.setEndTime(schedules[position].end_hour, schedules[position].end_minute)
+        }
         time_bar.invalidate()
 
         delete_btn.setOnClickListener{
             // 서버에 정보 보내서 삭제, 서버에서 데이터 제 전송 받는 등의 코드를 수행해서 다시 불러오기.
-            // invalidate()
-            Toast.makeText(itemView.context, "${schedules[position].schedule_name} 일정이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+            if(schedules?.get(position)!=null){
+                delRoutin(schedules.get(position)!!.id)
+                Toast.makeText(itemView.context, "\"${schedules.get(position).schedule_name}\" 일정이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                fragment.refreashFragment(day)
+            }
         }
     }
 }

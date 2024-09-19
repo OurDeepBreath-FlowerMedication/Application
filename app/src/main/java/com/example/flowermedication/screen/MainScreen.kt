@@ -4,8 +4,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import com.example.flowermedication.R
+import com.example.flowermedication.screen.menu0.Menu0Fragment
+import com.example.flowermedication.screen.menu1.Menu1Fragment
+import com.example.flowermedication.screen.menu2.Menu2Fragment
+import com.example.flowermedication.screen.menu3.Menu3Fragment
+import com.example.flowermedication.screen.menu4.Menu4Fragment
+import java.util.Calendar
 
 class MainScreen : AppCompatActivity() {
     var cur_screen = 0
@@ -17,22 +24,11 @@ class MainScreen : AppCompatActivity() {
         var menuButton : ImageButton = findViewById(R.id.menuButton)
         var menuFragment: FragmentContainerView = findViewById(R.id.fragment_menu)
 
-        var menu1Fragment: FragmentContainerView = findViewById(R.id.fragment_menu1)
-        var menu2Fragment: FragmentContainerView = findViewById(R.id.fragment_menu2)
-        var menu3Fragment: FragmentContainerView = findViewById(R.id.fragment_menu3)
-        var menu4Fragment: FragmentContainerView = findViewById(R.id.fragment_menu4)
-
-
         // 버튼 클릭시에 메뉴 프레그먼트 보여지도록
         menuFragment.visibility = View.GONE
         menuButton.setOnClickListener{
             menuFragment.visibility = View.VISIBLE
         }
-
-        menu1Fragment.visibility = View.GONE
-        menu2Fragment.visibility = View.GONE
-        menu3Fragment.visibility = View.GONE
-        menu4Fragment.visibility = View.GONE
 
     }
 
@@ -44,29 +40,33 @@ class MainScreen : AppCompatActivity() {
 
     fun menuSelect(menu:Int){
 
-        var menu0Fragment: FragmentContainerView = findViewById(R.id.fragment_menu0)
-        var menu1Fragment: FragmentContainerView = findViewById(R.id.fragment_menu1)
-        var menu2Fragment: FragmentContainerView = findViewById(R.id.fragment_menu2)
-        var menu3Fragment: FragmentContainerView = findViewById(R.id.fragment_menu3)
-        var menu4Fragment: FragmentContainerView = findViewById(R.id.fragment_menu4)
+        //var Fragment: FragmentContainerView = findViewById(R.id.fragment)
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+
 
         when(cur_screen){
-            0-> menu0Fragment.visibility = View.GONE
-            1-> menu1Fragment.visibility = View.GONE
-            2-> menu2Fragment.visibility = View.GONE
-            3-> menu3Fragment.visibility = View.GONE
-            4-> menu4Fragment.visibility = View.GONE
+            0-> fragmentTransaction.replace(R.id.fragment, Menu0Fragment())
+            1-> fragmentTransaction.replace(R.id.fragment, Menu1Fragment())
+            2-> fragmentTransaction.replace(R.id.fragment, Menu2Fragment(
+                (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7))
+            3-> fragmentTransaction.replace(R.id.fragment, Menu3Fragment(
+                (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7))
+            4-> fragmentTransaction.replace(R.id.fragment, Menu4Fragment())
         }
 
         cur_screen = menu
 
-        when(menu){
-            0-> menu0Fragment.visibility = View.VISIBLE
-            1-> menu1Fragment.visibility = View.VISIBLE
-            2-> menu2Fragment.visibility = View.VISIBLE
-            3-> menu3Fragment.visibility = View.VISIBLE
-            4-> menu4Fragment.visibility = View.VISIBLE
+        when(cur_screen){
+            0-> fragmentTransaction.replace(R.id.fragment, Menu0Fragment())
+            1-> fragmentTransaction.replace(R.id.fragment, Menu1Fragment())
+            2-> fragmentTransaction.replace(R.id.fragment, Menu2Fragment(
+                (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7))
+            3-> fragmentTransaction.replace(R.id.fragment, Menu3Fragment(
+                (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7))
+            4-> fragmentTransaction.replace(R.id.fragment, Menu4Fragment())
         }
+
+        fragmentTransaction.commit()
 
         goShecdule()
     }

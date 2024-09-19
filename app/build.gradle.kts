@@ -41,8 +41,12 @@ android {
 
 dependencies {
 
-    //QR 코드 인식을 위한 라이브러리
+    //QR 코드 인식 및 생성을 위한 라이브러리
     implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
+
+    //http 통신을 위한 라이브러리
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.7.0")

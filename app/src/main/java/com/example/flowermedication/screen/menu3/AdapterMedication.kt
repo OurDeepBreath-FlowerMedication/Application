@@ -9,13 +9,15 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowermedication.Medication
 import com.example.flowermedication.R
+import com.example.flowermedication.get_data.delMedication
 import com.example.flowermedication.get_data.getMedication
 
-class AdapterMedication(val position: Int): RecyclerView.Adapter<MedicationView>() {
-    var medications : MutableList<Medication> =  getMedication(position)
+class AdapterMedication(val position: Int, val day:Int, val fragment: Menu3Fragment): RecyclerView.Adapter<MedicationView>() {
+    var medications : MutableList<Medication> =  mutableListOf()
 
-    fun updateData(){
-        medications = getMedication(position)
+    fun updateData(medication_list : MutableList<Medication>){
+        medications.clear()
+        medications.addAll(medication_list)
         notifyDataSetChanged()
     }
 
@@ -25,7 +27,7 @@ class AdapterMedication(val position: Int): RecyclerView.Adapter<MedicationView>
     }
 
     override fun onBindViewHolder(holder: MedicationView, position: Int) {
-        holder.setMedication(medications[position])
+        holder.setMedication(medications[position], day, fragment)
     }
 
     override fun getItemCount(): Int {
@@ -34,14 +36,15 @@ class AdapterMedication(val position: Int): RecyclerView.Adapter<MedicationView>
 }
 
 class MedicationView(val itemView: View): RecyclerView.ViewHolder(itemView) {
-    fun setMedication(medication: Medication){
+    fun setMedication(medication: Medication, day:Int, fragment: Menu3Fragment){
         val medication_name_text : TextView = itemView.findViewById(R.id.medication_name_text)
         medication_name_text.text = medication.medication_name
 
         val btn_delete : ImageButton = itemView.findViewById(R.id.btn_delete)
         btn_delete.setOnClickListener{
-            // 삭제 처리하는 코드 추가
-            Toast.makeText(itemView.context,"${medication.medication_name} 복용을 삭제합니다.", Toast.LENGTH_SHORT).show()
+            delMedication(medication.id)
+            Toast.makeText(itemView.context,"\"${medication.medication_name}\" 복용을 삭제합니다.", Toast.LENGTH_SHORT).show()
+            fragment.refreashFragment(day)
         }
     }
 }

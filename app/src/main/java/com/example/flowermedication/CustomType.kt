@@ -11,29 +11,27 @@ data class DetailItem(
     var time: String
 )
 
-data class Schedule(
-    var content : String,
-    var year : Int = 0,
-    var month : Int = 0,
-    var day : Int = 0,
-    var hour : Int = 0,
-    var minute : Int = 0,
-    var done : Boolean = false
+data class TodaySchedule(
+    var schedule_name: String,
+    var doneTime : String,
+    var isDone : Boolean
 )
 
 data class DaySchedule(
-    var day: MutableList<Int> = mutableListOf(),
+    var day: List<Int>,
     var schedule_name: String,
     var start_hour: Int,
     var start_minute: Boolean,
     var end_hour: Int,
-    var end_minute: Boolean
+    var end_minute: Boolean,
+    var id : Int
 )
 
 data class Medication(
-    var day: MutableList<Int> = mutableListOf(),
+    var day: List<Int>,
     var medication_name: String,
     var meal_time : Int,
     val interval : Int,
-    val with_device: Boolean
+    val use_device: Boolean,
+    val id : Int
 )

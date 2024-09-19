@@ -1,65 +1,32 @@
 package com.example.flowermedication.get_data
 
 import android.util.Log
+import android.widget.Toast
 import com.example.flowermedication.DaySchedule
 import com.example.flowermedication.Medication
+import com.example.flowermedication.TodaySchedule
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
+import com.example.flowermedication.get_data.*
+import com.google.gson.Gson
 
 object ServerIP{
     // 서버 설정
     val IP : String = "http://10.0.2.2:3000/"
 }
 
-// API 인터페이스 정의
-interface ApiService {
-    @GET("test")
-    fun getData(): Call<List<String>>
+//임시
+object DeviceID{
+    // 서버 설정
+    val ID : String = "534er24333dd"
 }
 
-fun serverConnect() {
-    // Retrofit 인스턴스 생성
-    val retrofit = Retrofit.Builder()
-        .baseUrl(ServerIP.IP) // 에뮬레이터에서 로컬 서버로 연결
-        .addConverterFactory(GsonConverterFactory.create()) // JSON -> 객체 변환
-        .build()
-
-    // API 서비스 생성
-    val service = retrofit.create(ApiService::class.java)
-
-    // 비동기로 요청 실행
-    service.getData().enqueue(object : Callback<List<String>> {
-        override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
-            if (response.isSuccessful) {
-                val data = response.body()
-                // 응답 출력
-                data?.forEach {
-                    Log.d("Server", it)
-                }
-            } else {
-                Log.e("Server Error", "Response was not successful")
-            }
-        }
-
-        override fun onFailure(call: Call<List<String>>, t: Throwable) {
-            Log.e("Server Error", "Failed to connect to server: ${t.message}")
-        }
-    })
-}
-
-fun routin_check(
-    select_days : MutableList<Boolean>,
-    startHour : Int,
-    startMinute : Boolean,
-    endHour : Int,
-    endMinute : Boolean) : Boolean{
-
-
+suspend fun routin_meal():List<Boolean>?{
     // Retrofit 인스턴스 => http통신을 위한 라이브러리
     val retrofit = Retrofit.Builder()
         .baseUrl(ServerIP.IP)
@@ -67,57 +34,261 @@ fun routin_check(
         .build()
 
     // API 서비스 생성
-    val service = retrofit.create(ApiService::class.java)
+    val mealCheck = retrofit.create(MealCheck::class.java)
 
-    // 비동기로 요청 실행
-    service.getData().enqueue(object : Callback<List<String>> {
-        override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
-            if (response.isSuccessful) {
-                val data = response.body()
-                // 응답 출력
-                data?.forEach {
-                    Log.d("Server", it)
-                }
-            } else {
-                Log.e("Server Error", "Response was not successful")
-            }
-        }
-
-        override fun onFailure(call: Call<List<String>>, t: Throwable) {
-            Log.e("Server Error", "Failed to connect to server: ${t.message}")
-        }
-    })
-    return true;
+    return try{
+        mealCheck.getData(DeviceID.ID).meal_time
+    }catch (e: Exception){
+        Log.e("Server Error", "Failed to connect to server: ${e.message}")
+        null
+    }
 }
 fun create_routin(
     routin_num : Int,
     routin_name : String,
     select_days : MutableList<Boolean>,
-    startHour : Int,
-    startMinute : Boolean,
-    endHour : Int,
-    endMinute : Boolean,
+    start_hour : Int,
+    start_minute : Boolean,
+    end_hour : Int,
+    end_minute : Boolean,
     ){
 
-}
-fun getDaySchedule(day:Int) : MutableList<DaySchedule>{
-    var schedules : MutableList<DaySchedule> = mutableListOf()
-    schedules.add(DaySchedule(mutableListOf(1, 3, 5), "일정1", 7, false, 10, false))
-    schedules.add(DaySchedule(mutableListOf(0, 3), "일정2", 8, false, 9, false))
-    schedules.add(DaySchedule(mutableListOf(2, 5), "일정3", 10, false, 15, false))
-    schedules.add(DaySchedule(mutableListOf(6), "일정4", 7, false, 8, false))
-    schedules.add(DaySchedule(mutableListOf(0, 1, 2, 3, 4, 5, 6), "일정5", 8, false, 10, false))
+    val retrofit = Retrofit.Builder()
+        .baseUrl(ServerIP.IP)
+        .addConverterFactory(GsonConverterFactory.create()) // JSON -> 객체 변환
+        .build()
 
-    var result_schedules : MutableList<DaySchedule> = mutableListOf()
+    // API 서비스 생성
+    val routinCreate = retrofit.create(RoutinCreate::class.java)
 
-    for(schedule in schedules){
-        if(day in schedule.day){
-            result_schedules.add(schedule)
+    val routinData = RoutinData(
+        routin_num = routin_num,
+        routin_name = routin_name,
+        select_days = select_days.map { if (it) 1 else 0 },
+        start_hour = start_hour,
+        start_minute = start_minute,
+        end_hour = end_hour,
+        end_minute = end_minute
+    )
+
+    routinCreate.createRoutin(DeviceID.ID, routinData).enqueue(object : Callback<List<String>> {
+        override fun onResponse(
+            call: Call<List<String>>,
+            response: Response<List<String>>
+        ) {
+            if (response.isSuccessful) {
+                val result = response.body()
+                println("서버 응답: $result")
+            } else {
+                println("서버 에러: ${response.errorBody()}")
+            }
         }
-    }
 
-    return result_schedules
+        override fun onFailure(call: Call<List<String>>, t: Throwable) {
+            println("통신 실패: ${t.message}")
+        }
+    })
 }
+suspend fun getDaySchedule() : MutableList<DaySchedule>{
+    val retrofit = Retrofit.Builder()
+        .baseUrl(ServerIP.IP)
+        .addConverterFactory(GsonConverterFactory.create()) // JSON -> 객체 변환
+        .build()
+
+    // API 서비스 생성
+    val routins = retrofit.create(RoutinGet::class.java)
+    var schedules : MutableList<DaySchedule> = mutableListOf()
+
+    return try{
+        val response = routins.getData(DeviceID.ID)
+        if (response.isSuccessful && response.body() != null) {
+            val responseData = response.body()!!
+            for(item in responseData){
+                var days = (item["day"] as String).split(',')
+                schedules.add(
+                    DaySchedule(mutableListOf(days[0].toInt(), days[1].toInt(), days[2].toInt(), days[3].toInt(), days[4].toInt(), days[5].toInt(), days[6].toInt()),
+                    item["schedule_name"] as String, (item["start_hour"] as Double).toInt(), item["start_minute"] as Boolean, (item["end_hour"] as Double).toInt(), item["end_minute"] as Boolean, (item["id"] as Double).toInt()))
+            }
+
+        } else {
+            // 에러 처리: 서버에서 오류 코드 반환 시 로그로 출력
+            Log.e("Server Error", "Error: ${response.code()} - ${response.message()}")
+        }
+        schedules
+    }catch (e: Exception){
+        Log.e("Server Error", "Failed to connect to server: ${e.message}")
+        schedules
+    }
+}
+
+fun delRoutin(position : Int){
+    val retrofit = Retrofit.Builder()
+        .baseUrl(ServerIP.IP)
+        .addConverterFactory(GsonConverterFactory.create()) // JSON -> 객체 변환
+        .build()
+
+    // API 서비스 생성
+    val routinDelete = retrofit.create(RoutinDel::class.java)
+    val delData = RoutinDelRequest(
+        deviceID = DeviceID.ID,
+        id = position
+    )
+    routinDelete.delRoutin(delData).enqueue(object : Callback<List<String>> {
+        override fun onResponse(
+            call: Call<List<String>>,
+            response: Response<List<String>>
+        ) {
+            if (response.isSuccessful) {
+                val result = response.body()
+                println("서버 응답: $result")
+            } else {
+                println("서버 에러: ${response.errorBody()}")
+            }
+        }
+
+        override fun onFailure(call: Call<List<String>>, t: Throwable) {
+            println("통신 실패: ${t.message}")
+        }
+    })
+}
+
+fun create_medication(
+    select_days: MutableList<Boolean>,
+    medication_name : String,
+    meal_time : Int,
+    interval : Int,
+    use_device : Boolean
+){
+
+    val retrofit = Retrofit.Builder()
+        .baseUrl(ServerIP.IP)
+        .addConverterFactory(GsonConverterFactory.create()) // JSON -> 객체 변환
+        .build()
+
+    // API 서비스 생성
+    val routinCreate = retrofit.create(MedicationCreate::class.java)
+
+    val medicationData = MedicationData(
+        day = select_days.map { if (it) 1 else 0 },
+        medication_name = medication_name,
+        meal_time = meal_time,
+        interval = interval,
+        use_device = use_device
+    )
+
+    routinCreate.createMedication(DeviceID.ID, medicationData).enqueue(object : Callback<List<String>> {
+        override fun onResponse(
+            call: Call<List<String>>,
+            response: Response<List<String>>
+        ) {
+            if (response.isSuccessful) {
+                val result = response.body()
+                println("서버 응답: $result")
+            } else {
+                println("서버 에러: ${response.errorBody()}")
+            }
+        }
+
+        override fun onFailure(call: Call<List<String>>, t: Throwable) {
+            println("통신 실패: ${t.message}")
+        }
+    })
+}
+
+suspend fun getMedication() : MutableList<Medication>{
+    val retrofit = Retrofit.Builder()
+        .baseUrl(ServerIP.IP)
+        .addConverterFactory(GsonConverterFactory.create()) // JSON -> 객체 변환
+        .build()
+
+    // API 서비스 생성
+    val routins = retrofit.create(MedicationGet::class.java)
+    var medications : MutableList<Medication> = mutableListOf()
+
+    return try{
+        val response = routins.getData(DeviceID.ID)
+        if (response.isSuccessful && response.body() != null) {
+            val responseData = response.body()!!
+            for(item in responseData){
+                var days = (item["day"] as String).split(',')
+                medications.add(
+                    Medication(mutableListOf(days[0].toInt(), days[1].toInt(), days[2].toInt(), days[3].toInt(), days[4].toInt(), days[5].toInt(), days[6].toInt()),
+                        item["medication_name"] as String, (item["meal_time"] as Double).toInt(), (item["interval"] as Double).toInt(), item["use_device"] as Boolean, (item["id"] as Double).toInt()))
+            }
+
+        } else {
+            // 에러 처리: 서버에서 오류 코드 반환 시 로그로 출력
+            Log.e("Server Error", "Error: ${response.code()} - ${response.message()}")
+        }
+        medications
+    }catch (e: Exception){
+        Log.e("Server Error", "Failed to connect to server: ${e.message}")
+        medications
+    }
+}
+
+fun delMedication(id : Int){
+    val retrofit = Retrofit.Builder()
+        .baseUrl(ServerIP.IP)
+        .addConverterFactory(GsonConverterFactory.create()) // JSON -> 객체 변환
+        .build()
+
+    // API 서비스 생성
+    val medicationDelete = retrofit.create(MedicationDel::class.java)
+    val delData = MedicationDelRequest(
+        deviceID = DeviceID.ID,
+        id = id
+    )
+    medicationDelete.delMedication(delData).enqueue(object : Callback<List<String>> {
+        override fun onResponse(
+            call: Call<List<String>>,
+            response: Response<List<String>>
+        ) {
+            if (response.isSuccessful) {
+                val result = response.body()
+                println("서버 응답: $result")
+            } else {
+                println("서버 에러: ${response.errorBody()}")
+            }
+        }
+
+        override fun onFailure(call: Call<List<String>>, t: Throwable) {
+            println("통신 실패: ${t.message}")
+        }
+    })
+}
+
+suspend fun getTodaySchedule() : MutableList<TodaySchedule>{
+    val retrofit = Retrofit.Builder()
+        .baseUrl(ServerIP.IP)
+        .addConverterFactory(GsonConverterFactory.create()) // JSON -> 객체 변환
+        .build()
+
+    // API 서비스 생성
+    val todayGet = retrofit.create(TodayGet::class.java)
+    var todaySchedule : MutableList<TodaySchedule> = mutableListOf()
+
+    return try{
+        val response = todayGet.getData(DeviceID.ID)
+        if (response.isSuccessful && response.body() != null) {
+            val responseData = response.body()!!
+            for(item in responseData){
+                todaySchedule.add(
+                    TodaySchedule(item["schedule_name"] as String, item["doneTime"] as String, item["isDone"] as Boolean)
+                )
+            }
+
+        } else {
+            // 에러 처리: 서버에서 오류 코드 반환 시 로그로 출력
+            Log.e("Server Error", "Error: ${response.code()} - ${response.message()}")
+        }
+        todaySchedule
+    }catch (e: Exception){
+        Log.e("Server Error", "Failed to connect to server: ${e.message}")
+        todaySchedule
+    }
+}
+
 
 fun existID(deviceID : String):Boolean{
     // 해당 아이디가 등록된 장치의 아이디인지 확인
@@ -127,30 +298,4 @@ fun existID(deviceID : String):Boolean{
 fun wifiLink():Boolean{
     // 기기가 정상적으로 와이파이 연결되었는지 확인
     return true
-}
-
-fun selectiedSchedule():List<Boolean>{
-    // 아침, 점심, 저녁은 한 요일에 하나만 설정 가능하도록
-    return listOf(false, true, false)
-}
-
-fun getMedication(meal_time : Int) : MutableList<Medication>{
-    var medications : MutableList<Medication> = mutableListOf()
-    medications.add(Medication(mutableListOf(0, 1, 2, 3, 4, 5, 6), "약1", 1,0, false))
-    medications.add(Medication(mutableListOf(0, 2, 4, 6), "약2", 2,2, false))
-    medications.add(Medication(mutableListOf(0, 1, 2, 5, 6), "약3", 2,1, false))
-    medications.add(Medication(mutableListOf(0, 1, 2, 3, 4), "약4", 0,0, false))
-    medications.add(Medication(mutableListOf(0, 1, 2, 3, 4, 5, 6), "약5", 1, 1, false))
-    medications.add(Medication(mutableListOf(3, 4, 5, 6), "약6", 2, 0,false))
-
-    var result_medications : MutableList<Medication> = mutableListOf()
-
-    for(medication in medications){
-        if(meal_time==medication.meal_time){
-            result_medications.add(medication)
-        }
-    }
-
-    return result_medications
-
 }

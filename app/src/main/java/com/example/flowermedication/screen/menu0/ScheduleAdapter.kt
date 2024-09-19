@@ -7,33 +7,40 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flowermedication.R
-import com.example.flowermedication.Schedule
+import com.example.flowermedication.TodaySchedule
 
 class ScheduleAdapter : RecyclerView.Adapter<Holder>() {
-    var listData = mutableListOf<Schedule>()
+    var todaySchedules = mutableListOf<TodaySchedule>()
+
+    fun updateData(newList: MutableList<TodaySchedule>){
+        todaySchedules.clear()  // 기존 데이터를 지우고
+        todaySchedules.addAll(newList)  // 새로운 데이터를 추가
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.schedule_list_form, parent, false)
         return Holder(view)
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        val schedule = listData.get(position)
+        val schedule = todaySchedules.get(position)
         holder.setSchedule(schedule)
     }
 
     override fun getItemCount(): Int {
-        return listData.size
+        return todaySchedules.size
     }
 }
 
 class Holder(itemView: View) : RecyclerView.ViewHolder(itemView){
-    fun setSchedule(schedule: Schedule){
+    fun setSchedule(todaySchedule: TodaySchedule){
         val content = itemView.findViewById<TextView>(R.id.content_text)
         val time = itemView.findViewById<TextView>(R.id.time_text)
 
-        content.text = schedule.content
-        if(schedule.done) {
-            time.text = "${schedule.hour} : ${schedule.minute}"
+        content.text = todaySchedule.schedule_name
+        if(todaySchedule.isDone) {
+            time.text = todaySchedule.doneTime
             content.paintFlags = content.paintFlags or TextPaint.STRIKE_THRU_TEXT_FLAG
         }
     }

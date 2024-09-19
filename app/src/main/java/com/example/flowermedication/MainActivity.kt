@@ -17,6 +17,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //serverConnect()
+
         Handler(Looper.getMainLooper()).postDelayed({
             when (condition) {
                 1 -> startActivity(Intent(this, DeviceRegistration::class.java))
@@ -26,4 +28,5 @@ class MainActivity : AppCompatActivity() {
             finish()
         }, 3000) // 3초 후에 실행
     }
+
 }

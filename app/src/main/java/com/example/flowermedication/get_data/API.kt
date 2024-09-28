@@ -17,7 +17,7 @@ interface MealCheck {
 }
 interface RoutinCreate {
     @POST("/routin/create")
-    fun createRoutin(@Query("deviceID") deviceID: String, @Body routinData: RoutinData): Call<List<String>>
+    suspend fun createRoutin(@Query("deviceID") deviceID: String, @Body routinData: RoutinData): Call<List<String>>
 }
 
 interface RoutinGet {
@@ -32,7 +32,7 @@ interface RoutinDel {
 
 interface MedicationCreate {
     @POST("/medication/create")
-    fun createMedication(@Query("deviceID") deviceID: String, @Body mediData: MedicationData): Call<List<String>>
+    suspend fun createMedication(@Query("deviceID") deviceID: String, @Body mediData: MedicationData): Call<List<String>>
 }
 
 interface MedicationGet {
@@ -43,6 +43,11 @@ interface MedicationGet {
 interface MedicationDel {
     @POST("/medication/delete")
     fun delMedication(@Body delID : MedicationDelRequest) : Call<List<String>>
+}
+
+interface MedicationCheck {
+    @GET("/medication/check")
+    suspend fun getData(@Query("deviceID") deviceID: String, @Query("mealTime") mealTime: Int): Response<List<Boolean>>
 }
 
 interface TodayGet {

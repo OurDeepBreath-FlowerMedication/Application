@@ -18,7 +18,9 @@ import com.example.flowermedication.R
 import com.example.flowermedication.device_init.DeviceRegistration
 import com.example.flowermedication.get_data.getDaySchedule
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 class Menu2Fragment(private val day : Int) : Fragment() {
@@ -84,11 +86,11 @@ class Menu2Fragment(private val day : Int) : Fragment() {
 
     override fun onResume() {
         super.onResume()
-
         lifecycleScope.launch {
             val get : MutableList<DaySchedule> = getDaySchedule();
-
-            adapter_day.updateData(get)
+            withContext(Dispatchers.Main) {
+                adapter_day.updateData(get)
+            }
         }
     }
 

@@ -22,7 +22,7 @@ class TimeBarView @JvmOverloads constructor(
     private var startTime = 0
     private var endTime = 0
     val timeLength = 30.0
-    val start_width = 0.03
+    val marge_width = 0.03
 
     private val textPaint = Paint().apply {
         color = Color.BLACK
@@ -38,17 +38,25 @@ class TimeBarView @JvmOverloads constructor(
         val height = height
 
         // 배경 그리기
-        canvas.drawRect((width*start_width).toFloat(), (height / 2 - 10).toFloat(), width.toFloat(), (height / 2 + 10).toFloat(), backgroundPaint)
+        canvas.drawRect(
+            (width*marge_width).toFloat(),
+            (height / 2 - 10).toFloat(),
+            (width*(1-marge_width)).toFloat(),
+            (height / 2 + 10).toFloat(), backgroundPaint)
 
         // 시간에 따른 하이라이트 위치 계산
-        val startX = (width * (startTime / timeLength)+(width*start_width)).toInt()
-        val endX = (width * (endTime / timeLength)+(width*start_width)).toInt()
+        val startX = width * (1-marge_width) * (startTime / timeLength)+(width*marge_width)
+        val endX = width * (1-marge_width) * (endTime / timeLength)+(width*marge_width)
 
         // 하이라이트 구간 그리기
-        canvas.drawRect(startX.toFloat(), (height / 2 - 10).toFloat(), endX.toFloat(), (height / 2 + 10).toFloat(), highlightPaint)
+        canvas.drawRect(
+            startX.toFloat(),
+            (height / 2 - 10).toFloat(),
+            endX.toFloat(),
+            (height / 2 + 10).toFloat(), highlightPaint)
 
         // 시간 간격마다 숫자 표시
-        drawTimeLabels(canvas, width, (width*start_width).toFloat() , height)
+        drawTimeLabels(canvas, width, (width*marge_width).toFloat() , height)
     }
 
     private fun drawTimeLabels(canvas: Canvas, width: Int, start_width:Float, height: Int) {
@@ -72,10 +80,10 @@ class TimeBarView @JvmOverloads constructor(
     }
 
     fun setStartTime(hour: Int, minute : Boolean) {
-        startTime = (hour- 7)*2 + if (minute) 1 else 0
+        startTime = (hour- 7)*2 + if (minute) 0 else 1
     }
 
     fun setEndTime(hour: Int, minute : Boolean) {
-        endTime = (hour- 7)*2 + if (minute) 1 else 0
+        endTime = (hour- 7)*2 + if (minute) 0 else 1
     }
 }

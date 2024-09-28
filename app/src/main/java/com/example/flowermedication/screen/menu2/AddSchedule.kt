@@ -20,7 +20,7 @@ import com.example.flowermedication.custom_view.UnderLine
 import com.example.flowermedication.get_data.*
 import kotlinx.coroutines.*
 
-class AddSchedule : AppCompatActivity() {
+class AddSchedule() : AppCompatActivity() {
 
     val schedule_list : List<String> = listOf("--일정 선택--", "직접 입력", "아침", "점심", "저녁")
 
@@ -151,15 +151,18 @@ class AddSchedule : AppCompatActivity() {
                     }else if(select == 2){
                         routin_name = "저녁"
                     }
-                    create_routin(
-                        select,
-                        routin_name,
-                        select_days,
-                        startHour,
-                        start_time_set.getMinute(),
-                        endHour,
-                        end_time_set.getMinute()
-                    )
+                    lifecycleScope.launch {
+                        create_routin(
+                            select,
+                            routin_name,
+                            select_days,
+                            startHour,
+                            start_time_set.getMinute(),
+                            endHour,
+                            end_time_set.getMinute()
+                        )
+                    }
+
                     finish()
                 }
             }

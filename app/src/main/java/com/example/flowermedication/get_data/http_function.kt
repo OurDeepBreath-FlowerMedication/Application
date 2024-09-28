@@ -14,10 +14,11 @@ import retrofit2.Response
 
 import com.example.flowermedication.get_data.*
 import com.google.gson.Gson
+import retrofit2.await
 
 object ServerIP{
     // 서버 설정
-    val IP : String = "http://10.0.2.2:3000/"
+    val IP : String = "http://3.105.25.217:8080/"
 }
 
 //임시
@@ -43,7 +44,7 @@ suspend fun routin_meal():List<Boolean>?{
         null
     }
 }
-fun create_routin(
+suspend fun create_routin(
     routin_num : Int,
     routin_name : String,
     select_days : MutableList<Boolean>,
@@ -71,23 +72,11 @@ fun create_routin(
         end_minute = end_minute
     )
 
-    routinCreate.createRoutin(DeviceID.ID, routinData).enqueue(object : Callback<List<String>> {
-        override fun onResponse(
-            call: Call<List<String>>,
-            response: Response<List<String>>
-        ) {
-            if (response.isSuccessful) {
-                val result = response.body()
-                println("서버 응답: $result")
-            } else {
-                println("서버 에러: ${response.errorBody()}")
-            }
-        }
-
-        override fun onFailure(call: Call<List<String>>, t: Throwable) {
-            println("통신 실패: ${t.message}")
-        }
-    })
+    try{
+        val response = routinCreate.createRoutin(DeviceID.ID, routinData)
+    }catch (e : Exception){
+        Log.e("Server Error", "Failed to connect to server: ${e.message}")
+    }
 }
 suspend fun getDaySchedule() : MutableList<DaySchedule>{
     val retrofit = Retrofit.Builder()
@@ -152,7 +141,7 @@ fun delRoutin(position : Int){
     })
 }
 
-fun create_medication(
+suspend fun create_medication(
     select_days: MutableList<Boolean>,
     medication_name : String,
     meal_time : Int,
@@ -166,7 +155,7 @@ fun create_medication(
         .build()
 
     // API 서비스 생성
-    val routinCreate = retrofit.create(MedicationCreate::class.java)
+    val medicationCreate = retrofit.create(MedicationCreate::class.java)
 
     val medicationData = MedicationData(
         day = select_days.map { if (it) 1 else 0 },
@@ -176,23 +165,11 @@ fun create_medication(
         use_device = use_device
     )
 
-    routinCreate.createMedication(DeviceID.ID, medicationData).enqueue(object : Callback<List<String>> {
-        override fun onResponse(
-            call: Call<List<String>>,
-            response: Response<List<String>>
-        ) {
-            if (response.isSuccessful) {
-                val result = response.body()
-                println("서버 응답: $result")
-            } else {
-                println("서버 에러: ${response.errorBody()}")
-            }
-        }
-
-        override fun onFailure(call: Call<List<String>>, t: Throwable) {
-            println("통신 실패: ${t.message}")
-        }
-    })
+    try{
+        val response = medicationCreate.createMedication(DeviceID.ID, medicationData)
+    }catch(e : Exception){
+        Log.e("Server Error", "Failed to connect to server: ${e.message}")
+    }
 }
 
 suspend fun getMedication() : MutableList<Medication>{
@@ -256,6 +233,34 @@ fun delMedication(id : Int){
             println("통신 실패: ${t.message}")
         }
     })
+}
+
+suspend fun mealDay(meal : Int):List<Boolean>?{
+    //return listOf(true, true, true, true, true, true, true)
+
+    // Retrofit 인스턴스 => http통신을 위한 라이브러리
+    val retrofit = Retrofit.Builder()
+        .baseUrl(ServerIP.IP)
+        .addConverterFactory(GsonConverterFactory.create()) // JSON -> 객체 변환
+        .build()
+
+    // API 서비스 생성
+    val medicationCheck = retrofit.create(MedicationCheck::class.java)
+
+    return try{
+        val response = medicationCheck.getData(DeviceID.ID, meal)
+        if (response.isSuccessful && response.body() != null) {
+            val responseData = response.body()!!
+            responseData
+        } else {
+            // 에러 처리: 서버에서 오류 코드 반환 시 로그로 출력
+            Log.e("Server Error", "Error: ${response.code()} - ${response.message()}")
+            null
+        }
+    }catch (e: Exception){
+        Log.e("Server Error", "Failed to connect to server: ${e.message}")
+        null
+    }
 }
 
 suspend fun getTodaySchedule() : MutableList<TodaySchedule>{

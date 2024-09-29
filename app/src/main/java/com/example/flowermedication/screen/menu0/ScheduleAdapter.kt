@@ -3,6 +3,7 @@ package com.example.flowermedication.screen.menu0
 import android.view.LayoutInflater
 import android.view.View
 import android.text.TextPaint
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -42,6 +43,9 @@ class Holder(itemView: View) : RecyclerView.ViewHolder(itemView){
         if(todaySchedule.isDone) {
             time.text = todaySchedule.doneTime
             content.paintFlags = content.paintFlags or TextPaint.STRIKE_THRU_TEXT_FLAG
+        }else{
+            time.text = ""
+            content.paintFlags = content.paintFlags and TextPaint.STRIKE_THRU_TEXT_FLAG.inv()
         }
     }
 }

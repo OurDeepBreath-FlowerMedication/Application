@@ -56,7 +56,7 @@ class Menu0Fragment : Fragment() {
 
             testView.text = doneCount.toString() + "/" + allCount.toString();
 
-            flowerProgress.setImageResource(flowerList[((doneCount.toDouble()/allCount)*7).toInt()])
+            flowerProgress.setImageResource(flowerList[((doneCount.toDouble()/allCount)*6).toInt()])
         }
 
     }

@@ -22,7 +22,7 @@ import kotlinx.coroutines.*
 
 class AddSchedule() : AppCompatActivity() {
 
-    val schedule_list : List<String> = listOf("--일정 선택--", "직접 입력", "아침", "점심", "저녁")
+    val schedule_list : List<String> = listOf("--일정 선택--", "직접 입력", "아침 식사", "점심 식사", "저녁 식사")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -145,11 +145,11 @@ class AddSchedule() : AppCompatActivity() {
 
                     var routin_name : String = schedule_text.text.toString();
                     if(select == 0){
-                        routin_name = "아침"
+                        routin_name = "아침 식사"
                     }else if(select == 1){
-                        routin_name = "점심"
+                        routin_name = "점심 식사"
                     }else if(select == 2){
-                        routin_name = "저녁"
+                        routin_name = "저녁 식사"
                     }
                     lifecycleScope.launch {
                         create_routin(
